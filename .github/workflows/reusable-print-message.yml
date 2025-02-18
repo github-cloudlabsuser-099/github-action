@@ -1,0 +1,22 @@
+# This GitHub Actions workflow template is designed as a reusable component for printing a message.
+# It is triggered when called by another workflow using 'workflow_call', expecting a required input 'message' of type string.
+name: Reusable Print Message
+
+on:
+  # Triggered when this workflow is called by another workflow
+  workflow_call:
+    inputs:
+      # Defines a required input parameter 'message' of type string
+      message:
+        required: true
+        type: string
+
+jobs:
+  # Job named 'print-message' runs on an Ubuntu environment
+  print-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step to print the received message to the workflow log
+      - name: Print message
+        run: echo "Hi, this message is from primary workflow"
