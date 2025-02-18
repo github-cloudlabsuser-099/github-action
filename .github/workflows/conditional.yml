@@ -1,0 +1,42 @@
+# This is the configuration for our GitHub Actions workflow named "Complex Workflow".
+# The workflow is triggered on both push and pull request events.
+name: Complex Workflow
+
+on:
+ push:
+   branches:
+     - main
+   paths:
+     - '.github/workflows/conditional.yml'
+ pull_request:
+   branches:
+     - main
+   paths:
+     - '.github/workflows/conditional.yml'
+ workflow_dispatch:
+
+jobs:
+  # Job 1 runs on an Ubuntu machine
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+    # Step to checkout the repository
+    - name: Checkout
+      uses: actions/checkout@v2
+    # Step to run a one-line script
+    - name: Run a one-line script
+      run: echo Hello, world!
+
+  # Job 2 depends on the successful completion of Job 1
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    # Job 2 only runs on push events and if Job 1 was successful
+    if: github.event_name == 'push' && success()
+    steps:
+    # Step to checkout the repository
+    - name: Checkout
+      uses: actions/checkout@v2
+    # Step to run a different one-line script
+    - name: Run a different one-line script
+      run: echo Hello again, world!
