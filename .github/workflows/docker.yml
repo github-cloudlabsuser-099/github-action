@@ -1,0 +1,50 @@
+# This is the configuration for our GitHub Actions workflow to build and push a Docker image to Azure Container Registry (ACR).
+# The workflow is triggered on push events targeting the main branch.
+name: Build and Push Docker Image to ACR
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/docker.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/docker.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step to checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Step to log in to Azure using the Azure CLI GitHub Action
+    - name: Log in to Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Step to list files in the current directory
+    - name: List files
+      run: ls -la
+
+    # Step to build the Docker image
+    - name: Build Docker image
+      run: |
+        docker buildx build . -t gacontainer1607895.azurecr.io/my-app:latest
+
+    # Step to log in to Azure Container Registry
+    - name: Log in to Azure Container Registry
+      run: |
+        az acr login --name gacontainer1607895
+
+    # Step to push the Docker image to Azure Container Registry
+    - name: Push Docker image
+      run: |
+        docker push gacontainer1607895.azurecr.io/my-app:latest  
